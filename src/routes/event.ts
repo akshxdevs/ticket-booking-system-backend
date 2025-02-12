@@ -6,7 +6,7 @@ export const eventRouter = express.Router();
 const eventSchema = z.object({
     eventName:z.string().min(1,"Event name field required"),
     eventDetail:z.string().min(1,"Event name field required"),
-    totalTickets:z.number().min(1, "Total tickets must be at least 1")
+    availableTickets:z.number().min(1, "Total tickets must be at least 1")
 
 })
 eventRouter.post("/addevent",async(req,res)=>{
@@ -15,13 +15,12 @@ eventRouter.post("/addevent",async(req,res)=>{
         if (!body.success) {
             return res.status(400).json({message:"Invalid Input",error:body.error.errors})
         }
-        const {eventName,eventDetail,totalTickets} = body.data
+        const {eventName,eventDetail,availableTickets} = body.data
         await prismaClient.event.create({
             data:{
                 eventName:eventName,
                 eventDetail:eventDetail,
-                totalTickets:totalTickets || 100,
-                availableTickets:totalTickets
+                availableTickets:availableTickets
             }
         })
         res.json({
@@ -32,7 +31,7 @@ eventRouter.post("/addevent",async(req,res)=>{
         res.status(403).send({message:"Something went wrong!"})
     }
 })
-eventRouter.get("/events",async(req,res)=>{
+eventRouter.get("/getallevents",async(req,res)=>{
     try {    
         const getAllEvents = await prismaClient.event.findMany({
             where:{

@@ -20,7 +20,7 @@ exports.eventRouter = express_1.default.Router();
 const eventSchema = zod_1.z.object({
     eventName: zod_1.z.string().min(1, "Event name field required"),
     eventDetail: zod_1.z.string().min(1, "Event name field required"),
-    totalTickets: zod_1.z.number().min(1, "Total tickets must be at least 1")
+    availableTickets: zod_1.z.number().min(1, "Total tickets must be at least 1")
 });
 exports.eventRouter.post("/addevent", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -28,13 +28,12 @@ exports.eventRouter.post("/addevent", (req, res) => __awaiter(void 0, void 0, vo
         if (!body.success) {
             return res.status(400).json({ message: "Invalid Input", error: body.error.errors });
         }
-        const { eventName, eventDetail, totalTickets } = body.data;
+        const { eventName, eventDetail, availableTickets } = body.data;
         yield db_1.prismaClient.event.create({
             data: {
                 eventName: eventName,
                 eventDetail: eventDetail,
-                totalTickets: totalTickets || 100,
-                availableTickets: totalTickets
+                availableTickets: availableTickets
             }
         });
         res.json({
@@ -46,7 +45,7 @@ exports.eventRouter.post("/addevent", (req, res) => __awaiter(void 0, void 0, vo
         res.status(403).send({ message: "Something went wrong!" });
     }
 }));
-exports.eventRouter.get("/events", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.eventRouter.get("/getallevents", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const getAllEvents = yield db_1.prismaClient.event.findMany({
             where: {

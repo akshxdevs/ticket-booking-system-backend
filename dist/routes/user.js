@@ -78,7 +78,7 @@ exports.userRouter.post("/signin", (req, res) => __awaiter(void 0, void 0, void 
             return res.status(401).send({ message: "Password Mismatch!" });
         }
         const token = jsonwebtoken_1.default.sign({
-            userId: user.id
+            id: user.id
         }, SECRET, { expiresIn: "1h" });
         res.json({
             token,
