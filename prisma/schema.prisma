@@ -24,9 +24,11 @@ model User {
 
 model Event {
   id String @id @default(uuid())
-  eventName String 
+  eventName String
   eventDetail String
   availableTickets Int
+  tickets Ticket[]
+  seats Seat[]
 }
 
 model Ticket {
@@ -34,7 +36,9 @@ model Ticket {
   userId String
   eventId String
   price Float
+  status TICKETSTATUS @default(BOOKED)
   user User @relation(fields: [userId],references: [id])
+  event Event @relation(fields: [eventId],references: [id])
   seatNumber String
 }
 
@@ -44,8 +48,9 @@ model Seat {
   venue VENUE
   userId String
   seatNumber String @unique
-  eventId String 
+  eventId String
   user User @relation(fields: [userId],references: [id])
+  event Event @relation(fields: [eventId],references: [id])
   ticketId String
 }
 
@@ -56,7 +61,8 @@ enum VENUE {
 }
 
 enum TICKETSTATUS {
-  AVAILABLE 
+  AVAILABLE
   BOOKED
   RESERVED
+  CANCELLED
 }
