@@ -1,6 +1,7 @@
 import express from "express";
 import { z } from "zod";
 import { prismaClient } from "../lib/db";
+import { authenticateJWT } from "../middleware";
 export const eventRouter = express.Router();
 
 const eventSchema = z.object({
@@ -9,7 +10,7 @@ const eventSchema = z.object({
     availableTickets:z.number().min(1, "Total tickets must be at least 1")
 
 })
-eventRouter.post("/addevent",async(req,res)=>{
+eventRouter.post("/addevent",authenticateJWT,async(req,res)=>{
     try {
         const body = eventSchema.safeParse(req.body);
         if (!body.success) {
@@ -43,7 +44,7 @@ eventRouter.get("/getallevents",async(req,res)=>{
         })
         res.json({
             message:"All Events Fetched Successfully",
-            evnts:getAllEvents
+            events:getAllEvents
         })
     } catch (error) {
         console.error(error);
