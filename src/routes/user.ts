@@ -21,21 +21,22 @@ userRouter.post("/signup",async(req:Request,res:Response)=>{
         if (!body.success) {
             return res.status(400).json({message:"Invalid Input",error:body.error.errors})
         }
+        const { email, password } = body.data;
         const existingUser = await prismaClient.user.findFirst({
             where:{
-                email:req.body.email
+                email:email
             }
         })
         if (existingUser){
-            res.status(402).send({message:"User already exist"})
+            return res.status(409).send({message:"User already exist"})
         }
         const username = "user" + String(Math.floor(Math.random()*1000000)).padStart(6,"0");
-        const password = await bcrypt.hash(req.body.password,10)
+        const hashedPassword = await bcrypt.hash(password,10)
         await prismaClient.user.create({
             data:{
                 username:username,
-                email:req.body.email,
-                password:password
+                email:email,
+                password:hashedPassword
             }
         })
         res.json({
